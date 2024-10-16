@@ -16,10 +16,10 @@ const Section = ({ title, level, children, className }) => {
 	const HeadingTag = `h${level}`;
 	return (
 		<div
-			className={`p-6 border rounded-xl shadow-lg flex flex-col w-full mt-${level === 2 ? "6" : level === 3 ? "4" : "2"} ${className}`}
+			className={`p-6 border rounded-xl shadow-lg flex flex-col w-full mt-${level === 1 ? "6" : level === 2 ? "4" : "2"} ${className}`}
 		>
 			<HeadingTag
-				className={`text-${level === 2 ? "2xl" : level === 3 ? "xl" : "lg"} font-bold mb-4`}
+				className={`text-${level === 1 ? "2xl" : level === 2 ? "xl" : "lg"} font-bold mb-4`}
 			>
 				{title}
 			</HeadingTag>
@@ -38,38 +38,42 @@ Section.propTypes = {
 const Home = ({ isDarkMode, toggleDarkMode }) => {
 	const colors = isDarkMode ? colorsOptions.darkMode : colorsOptions.lightMode;
 
-	const renderParagraphs = (paragraphs) =>
-		paragraphs.map((paragraph, index) =>
-			typeof paragraph === "string" ? (
-				<Paragraph key={index} className={colors.paragraph}>
-					{paragraph}
-				</Paragraph>
-			) : (
-				<Paragraph
-					key={index}
-					className={paragraph.emphasis ? colors.title : colors.paragraph}
-				>
-					{paragraph.text}
-				</Paragraph>
-			),
-		);
-
-	const renderSections = (sections) =>
-		sections.map((section, index) => (
-			<Section
-				key={index}
-				title={section.title}
-				level={section.level}
-				className={
-					`${colors.border} ` +
-					(section.level % 2 === 0 ? colors.divBackground : colors.background)
+	const renderMarkdown = (md) => {
+		const paragraphs = md.split("\n");
+		var all = "";
+		var level = 0;
+		for (var par of paragraphs) {
+			var actualLevel = 0;
+			while (par[0] === "#") {
+				actualLevel++;
+				par = par.substring(1);
+			}
+			par = par.trim();
+			par = par.replace(/<a /g, `<a class="${colors.title}" `);
+			par = par.replace(
+				/\*(.*?)\*/g,
+				`<strong class="${colors.title}">$1</strong>`,
+			);
+			if (actualLevel > level) {
+				level = actualLevel;
+				const HeadingTag = `h${level}`;
+				all += `<div class="p-6 border rounded-xl shadow-lg flex flex-col w-full mt-${level === 1 ? "4" : level === 2 ? "4" : "2"} ${colors.border} ${level % 2 === 1 ? colors.divBackground : colors.background}"><${HeadingTag} class="text-${level === 1 ? "2xl" : level === 2 ? "xl" : "lg"} font-bold mb-4">${par}</${HeadingTag}>`;
+			} else if (actualLevel > 0) {
+				while (actualLevel < level) {
+					level--;
+					all += `</div>`;
 				}
-			>
-				{renderParagraphs(section.paragraphs)}
-				{section.subsections && renderSections(section.subsections)}
-			</Section>
-		));
-
+				const HeadingTag = `h${level}`;
+				all += `</div><div class="p-6 border rounded-xl shadow-lg flex flex-col w-full mt-${level === 1 ? "4" : level === 2 ? "4" : "2"} ${colors.border} ${level % 2 === 1 ? colors.divBackground : colors.background}"><${HeadingTag} class="text-${level === 1 ? "2xl" : level === 2 ? "xl" : "lg"} font-bold mb-4">${par}</${HeadingTag}>`;
+			} else {
+				if (par !== "") {
+					par = par.replace("\\n", "<br>");
+					all += `<p class="mb-2 text-lg leading-relaxed">${par}</p>`;
+				}
+			}
+		}
+		return all;
+	};
 	return (
 		<>
 			<Navbar toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
@@ -85,7 +89,11 @@ const Home = ({ isDarkMode, toggleDarkMode }) => {
 				<h1 className={`text-4xl font-bold text-center mb-12 ${colors.title}`}>
 					La història dels peixos
 				</h1>
-				{renderSections(historiaPeixos)}
+				{
+					<div
+						dangerouslySetInnerHTML={{ __html: renderMarkdown(historiaPeixos) }}
+					/>
+				}
 			</div>
 			<Footer isDarkMode={isDarkMode} />
 		</>

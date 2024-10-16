@@ -1,3 +1,6 @@
+import historiaPeixos from "./LHDP.md?raw";
+export { historiaPeixos };
+
 export const navLinks = [
 	{ label: "Historia", path: "historia" },
 	{ label: "Acudits", href: "/lista-acudits" },
@@ -30,11 +33,3 @@ export const colorsOptions = {
 		buttonHoverBackground: "hover:bg-green-700",
 	},
 };
-
-export const historiaPeixos = [
-	{
-		title: "La vida del peix.",
-		level: 2,
-		paragraphs: ["es dura"],
-	},
-];
