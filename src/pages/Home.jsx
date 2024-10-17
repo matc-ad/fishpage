@@ -63,12 +63,14 @@ const Home = ({ isDarkMode, toggleDarkMode }) => {
 					level--;
 					all += `</div>`;
 				}
-				const HeadingTag = `h${level}`;
-				all += `</div><div class="p-6 border rounded-xl shadow-lg flex flex-col w-full mt-${level === 1 ? "4" : level === 2 ? "4" : "2"} ${colors.border} ${level % 2 === 1 ? colors.divBackground : colors.background}"><${HeadingTag} class="text-${level === 1 ? "2xl" : level === 2 ? "xl" : "lg"} font-bold mb-4">${par}</${HeadingTag}>`;
+				if (par !== "[reset]") {
+					const HeadingTag = `h${level}`;
+					all += `</div><div class="p-6 border rounded-xl shadow-lg flex flex-col w-full mt-${level === 1 ? "4" : level === 2 ? "4" : "2"} ${colors.border} ${level % 2 === 1 ? colors.divBackground : colors.background}"><${HeadingTag} class="text-${level === 1 ? "2xl" : level === 2 ? "xl" : "lg"} font-bold mb-4">${par}</${HeadingTag}>`;
+				}
 			} else {
 				if (par !== "") {
 					par = par.replace("\\n", "<br>");
-					all += `<p class="mb-2 text-lg leading-relaxed">${par}</p>`;
+					all += `<p class="mb-2 mt-1 text-lg leading-relaxed">${par}</p>`;
 				}
 			}
 		}
@@ -85,8 +87,13 @@ const Home = ({ isDarkMode, toggleDarkMode }) => {
 				d&apos;haver notat. Aquesta relació no és casual, sinó que té una
 				història que cal conèixer. A continuació, us presentem
 			</div>
-			<div id="historia" className="container mx-auto px-4 sm:px-6 lg:px-8">
-				<h1 className={`text-4xl font-bold text-center mb-12 ${colors.title}`}>
+			<div
+				id="historia"
+				className="container mx-auto mb-4 px-4 sm:px-6 lg:px-8"
+			>
+				<h1
+					className={`text-4xl font-bold text-center mb-4 mt-2 ${colors.title}`}
+				>
 					La història dels peixos
 				</h1>
 				{
